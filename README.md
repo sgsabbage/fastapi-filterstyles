@@ -20,8 +20,8 @@ Irregardless of style, the first thing to do is build your filter class. This is
 Each filter class provides a set of possible operations, such as `eq`, `neq`, `contains`. If you want to only expose a subset of these on a given field, you can pass that information into the field on the filter class. If no subset is provided, all operators for that type will be accepted.
 
 ```python
-from fastapi_filterstyles import UUIDFilter, StringFilter
-from pydantic import BaseModel
+from fastapi_filterstyles import StringFilter, UUIDFilter
+from pydantic import BaseModel, Field
 
 class ItemFilters(BaseModel):
     id: UUIDFilter
