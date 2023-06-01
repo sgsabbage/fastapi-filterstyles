@@ -15,7 +15,7 @@ Currently the library supports both delimited styles, e.g. `?name=contains:shell
 
 ### Filter class
 
-Irregardless of style, the first thing to do is build your filter class. This is a Pydantic object that represents the filters you want to accept. It can contain any combination of standard library types such as `bool`, `int` and `str`, as well as fields that inherit from the `BaseFilter` class of this package. The package only provides a few at the moment, with more to come as I add them.
+Irrespective of style, the first thing to do is build your filter class. This is a Pydantic object that represents the filters you want to accept. It can contain any combination of standard library types such as `bool`, `int` and `str`, as well as fields that inherit from the `BaseFilter` class of this package. The package only provides a few at the moment, with more to come as I add them.
 
 Because BaseFilters are also Pydantic objects, the data parsing functionality works identically, and will generate a human-readable set of errors should the parsing fail (e.g. passing a random string to a UUID field).
 
