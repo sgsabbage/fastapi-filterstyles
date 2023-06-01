@@ -9,13 +9,15 @@ Filtering in query strings can be complex and there are a variety of styles for 
 
 This library attempts to simplify and standardise the generation of filter query strings, while making the data passed into the route transparent to how it was generated.
 
-Currently the library supports both delimited styles, e.g. `?name=contains:shell&name=neq:shell+beach` and the OpenAPI [deep object style](https://swagger.io/docs/specification/serialization/).
+Currently the library supports both delimited styles, e.g. `?name=contains:shell&name=neq:shell+beach` and the OpenAPI [deep object style](https://swagger.io/docs/specification/serialization/) `?name[contains]=shell&name[neq]=shell+beach`.
 
 ## Usage
 
 ### Filter class
 
 Irregardless of style, the first thing to do is build your filter class. This is a Pydantic object that represents the filters you want to accept. It can contain any combination of standard library types such as `bool`, `int` and `str`, as well as fields that inherit from the `BaseFilter` class of this package. The package only provides a few at the moment, with more to come as I add them.
+
+Because BaseFilters are also Pydantic objects, the data parsing functionality works identically, and will generate a human-readable set of errors should the parsing fail (e.g. passing a random string to a UUID field).
 
 Each filter class provides a set of possible operations, such as `eq`, `neq`, `contains`. If you want to only expose a subset of these on a given field, you can pass that information into the field on the filter class. If no subset is provided, all operators for that type will be accepted.
 
