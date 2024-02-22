@@ -1,7 +1,5 @@
-from dataclasses import fields
 from inspect import Parameter, Signature
-from typing import (Annotated, Any, Callable, List, Optional, Type, TypeVar,
-                    Union, get_args)
+from typing import Annotated, Any, Callable, Type, TypeVar, Union, get_args
 
 from fastapi import FastAPI, HTTPException, Query, status
 from fastapi.routing import APIRoute
@@ -19,6 +17,7 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
     Creates a filter dependency that accepts query strings in a delimited format
     e.g. ?name=contains:shell&name=neq:shell+beach
     """
+
     def dependency(**kwargs: str) -> FT:
         params: dict[str, Union[dict[str, list[str]], str, None]] = {}
         for key, field in filter_cls.__fields__.items():
@@ -39,7 +38,9 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
                 val_array = val.split(":")
                 op = val_array[0]
 
-                if op in filter_fields and filter_fields[op].field_info.extra.get('flag'):
+                if op in filter_fields and filter_fields[op].field_info.extra.get(
+                    "flag"
+                ):
                     operations[op] = True
                     continue
                 if len(val_array) == 1:
@@ -59,7 +60,11 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
     for key, field in filter_cls.__fields__.items():
         if issubclass(field.type_, BaseFilter):
             extra = field.field_info.extra
-            description = f"{field.field_info.description} " if field.field_info.description else ""
+            description = (
+                f"{field.field_info.description} "
+                if field.field_info.description
+                else ""
+            )
             operators = extra.get(
                 "operators", [sub_field for sub_field in field.type_.__fields__]
             )
@@ -93,7 +98,7 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
 
 def deep_object_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
     """
-    Creates a filter dependency that accepts query strings in OpenAPI's 
+    Creates a filter dependency that accepts query strings in OpenAPI's
     deep object format
     e.g. ?name[contains]=shell&name[neq]=shell+beach
 

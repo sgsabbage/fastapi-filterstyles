@@ -8,11 +8,12 @@ from pydantic import BaseModel, Field
 FT = TypeVar("FT", bound="BaseModel")
 T = TypeVar("T")
 
+
 class BaseFilter(BaseModel):
     default_operator: ClassVar[str] = "eq"
 
     def __bool__(self) -> bool:
-        return bool(self.__fields_set__)    
+        return bool(self.__fields_set__)
 
 
 DefaultList = Annotated[list[T], Field(default_factory=list)]
@@ -46,7 +47,6 @@ FlagField = Annotated[Optional[Literal[True]], Field(flag=True)]
 #     "in"
 
 
-
 class StringFilter(BaseFilter):
     eq: DefaultList[str]
     ne: DefaultList[str]
@@ -77,6 +77,7 @@ class IntFilter(BaseFilter):
     is_empty: FlagField
     is_not_empty: FlagField
 
+
 class FloatFilter(BaseFilter):
     eq: DefaultList[float]
     neq: DefaultList[float]
@@ -87,6 +88,7 @@ class FloatFilter(BaseFilter):
     is_empty: FlagField
     is_not_empty: FlagField
 
+
 class DecimalFilter(BaseFilter):
     eq: DefaultList[Decimal]
     neq: DefaultList[Decimal]
@@ -96,6 +98,7 @@ class DecimalFilter(BaseFilter):
     lte: DefaultList[Decimal]
     is_empty: FlagField
     is_not_empty: FlagField
+
 
 class DateFilter(BaseFilter):
     eq: DefaultList[date]
