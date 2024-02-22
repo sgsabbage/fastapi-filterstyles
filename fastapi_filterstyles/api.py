@@ -26,7 +26,7 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
                 params[key] = arg_val
                 continue
 
-            operations: dict[str, list[str]] = {}
+            operations: dict[str, Any] = {}
             params[key] = operations
 
             if arg_val is None:
