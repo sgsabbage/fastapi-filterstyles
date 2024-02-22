@@ -1,13 +1,7 @@
+from dataclasses import fields
 from inspect import Parameter, Signature
-from typing import (
-    Annotated,
-    Any,
-    Callable,
-    Type,
-    TypeVar,
-    Union,
-    get_args,
-)
+from typing import (Annotated, Any, Callable, List, Optional, Type, TypeVar,
+                    Union, get_args)
 
 from fastapi import FastAPI, HTTPException, Query, status
 from fastapi.routing import APIRoute
@@ -27,9 +21,9 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
     """
     def dependency(**kwargs: str) -> FT:
         params: dict[str, Union[dict[str, list[str]], str, None]] = {}
-        for key, value in filter_cls.__fields__.items():
+        for key, field in filter_cls.__fields__.items():
             arg_val = kwargs.get(key)
-            if not issubclass(value.type_, BaseFilter):
+            if not issubclass(field.type_, BaseFilter):
                 params[key] = arg_val
                 continue
 
@@ -39,11 +33,17 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
             if arg_val is None:
                 continue
 
+            filter_fields = field.type_.__fields__
+
             for val in arg_val:
                 val_array = val.split(":")
                 op = val_array[0]
+
+                if op in filter_fields and filter_fields[op].field_info.extra.get('flag'):
+                    operations[op] = True
+                    continue
                 if len(val_array) == 1:
-                    op = value.type_.default_operator
+                    op = field.type_.default_operator
                 fil = val_array[-1]
                 if op not in operations:
                     operations[op] = []
@@ -56,15 +56,16 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
             )
 
     params = []
-    for key, value in filter_cls.__fields__.items():
-        if issubclass(value.type_, BaseFilter):
-            extra = value.field_info.extra
+    for key, field in filter_cls.__fields__.items():
+        if issubclass(field.type_, BaseFilter):
+            extra = field.field_info.extra
+            description = f"{field.field_info.description} " if field.field_info.description else ""
             operators = extra.get(
-                "operators", [sub_field for sub_field in value.type_.__fields__]
+                "operators", [sub_field for sub_field in field.type_.__fields__]
             )
-            description = (
+            description += (
                 f"Allowed operators: `{'`, `'.join(operators)}`. "
-                f"Default operator `{value.type_.default_operator}`"
+                f"Default operator `{field.type_.default_operator}`"
             )
             parameter = Parameter(
                 name=key,
@@ -80,7 +81,7 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
         else:
             parameter = Parameter(
                 name=key,
-                annotation=value.type_,
+                annotation=field.type_,
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=None,
             )

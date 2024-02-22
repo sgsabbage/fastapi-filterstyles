@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Annotated, ClassVar, TypeVar
+from typing import Annotated, ClassVar, Literal, Optional, TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -16,6 +16,7 @@ class BaseFilter(BaseModel):
 
 
 DefaultList = Annotated[list[T], Field(default_factory=list)]
+FlagField = Annotated[Optional[Literal[True]], Field(flag=True)]
 
 # Null checks
 #     "is_empty"
@@ -53,8 +54,8 @@ class StringFilter(BaseFilter):
     not_contains: DefaultList[str]
     starts_with: DefaultList[str]
     ends_with: DefaultList[str]
-    is_empty: DefaultList[str]
-    is_not_empty: DefaultList[str]
+    is_empty: FlagField
+    is_not_empty: FlagField
     in_: list[str] = Field(
         default_factory=list,
         name="in",
@@ -73,8 +74,8 @@ class IntFilter(BaseFilter):
     lt: DefaultList[int]
     gte: DefaultList[int]
     lte: DefaultList[int]
-    is_empty: DefaultList[int]
-    is_not_empty: DefaultList[int]
+    is_empty: FlagField
+    is_not_empty: FlagField
 
 class FloatFilter(BaseFilter):
     eq: DefaultList[float]
@@ -83,8 +84,8 @@ class FloatFilter(BaseFilter):
     lt: DefaultList[float]
     gte: DefaultList[float]
     lte: DefaultList[float]
-    is_empty: DefaultList[float]
-    is_not_empty: DefaultList[float]
+    is_empty: FlagField
+    is_not_empty: FlagField
 
 class DecimalFilter(BaseFilter):
     eq: DefaultList[Decimal]
@@ -93,8 +94,8 @@ class DecimalFilter(BaseFilter):
     lt: DefaultList[Decimal]
     gte: DefaultList[Decimal]
     lte: DefaultList[Decimal]
-    is_empty: DefaultList[Decimal]
-    is_not_empty: DefaultList[Decimal]
+    is_empty: FlagField
+    is_not_empty: FlagField
 
 class DateFilter(BaseFilter):
     eq: DefaultList[date]
@@ -103,8 +104,8 @@ class DateFilter(BaseFilter):
     lt: DefaultList[date]
     gte: DefaultList[date]
     lte: DefaultList[date]
-    is_empty: DefaultList[date]
-    is_not_empty: DefaultList[date]
+    is_empty: FlagField
+    is_not_empty: FlagField
     is_before: DefaultList[date]
     is_after: DefaultList[date]
 
@@ -116,7 +117,7 @@ class DateTimeFilter(BaseFilter):
     lt: DefaultList[datetime]
     gte: DefaultList[datetime]
     lte: DefaultList[datetime]
-    is_empty: DefaultList[datetime]
-    is_not_empty: DefaultList[datetime]
+    is_empty: FlagField
+    is_not_empty: FlagField
     is_before: DefaultList[datetime]
     is_after: DefaultList[datetime]
