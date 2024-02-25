@@ -58,7 +58,7 @@ class StringFilter(BaseFilter):
     is_not_empty: FlagField
     in_: list[str] = Field(
         default_factory=list,
-        name="in",
+        alias="in",
     )
 
 

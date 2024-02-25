@@ -3,10 +3,9 @@ from typing import Annotated, Any, Callable, Type, TypeVar, Union, get_args
 
 from fastapi import FastAPI, HTTPException, Query, status
 from fastapi.routing import APIRoute
+from fastapi_filterstyles.fields import BaseFilter
 from pydantic import BaseModel, ValidationError
 from pydantic.fields import ModelField
-
-from fastapi_filterstyles.fields import BaseFilter
 
 FT = TypeVar("FT", bound="BaseModel")
 T = TypeVar("T")
@@ -57,7 +56,11 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
             )
 
     params = []
-    for key, field in filter_cls.__fields__.items():
+    # BaseModel.__fields__ is replaced with BaseModel.model_fields in Pydantic v2
+    if (fields := getattr(filter_cls, "model_fields", None)) is None:
+        fields = filter_cls.__fields__
+
+    for key, field in fields.items():
         if issubclass(field.type_, BaseFilter):
             extra = field.field_info.extra
             description = (
@@ -72,8 +75,9 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
                 f"Allowed operators: `{'`, `'.join(operators)}`. "
                 f"Default operator `{field.type_.default_operator}`"
             )
+            name = field.field_info.alias or key
             parameter = Parameter(
-                name=key,
+                name=name,
                 annotation=list[str],
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=Query(
@@ -84,8 +88,9 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
                 ),
             )
         else:
+            name = field.field_info.alias or key
             parameter = Parameter(
-                name=key,
+                name=name,
                 annotation=field.type_,
                 kind=Parameter.POSITIONAL_OR_KEYWORD,
                 default=None,
