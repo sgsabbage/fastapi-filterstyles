@@ -57,7 +57,7 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
 
     params = []
     # BaseModel.__fields__ is replaced with BaseModel.model_fields in Pydantic v2
-    if fields := getattr(filter_cls, "model_fields", False) is not False:
+    if (fields := getattr(filter_cls, "model_fields", None)) is None:
         fields = filter_cls.__fields__
 
     for key, field in fields.items():
