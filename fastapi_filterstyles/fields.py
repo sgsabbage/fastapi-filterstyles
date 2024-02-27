@@ -49,7 +49,7 @@ FlagField = Annotated[Optional[Literal[True]], Field(flag=True)]
 
 class StringFilter(BaseFilter):
     eq: DefaultList[str]
-    ne: DefaultList[str]
+    neq: DefaultList[str]
     contains: DefaultList[str]
     not_contains: DefaultList[str]
     starts_with: DefaultList[str]
@@ -60,11 +60,19 @@ class StringFilter(BaseFilter):
         default_factory=list,
         alias="in",
     )
+    not_in: DefaultList[str]
 
 
 class UUIDFilter(BaseFilter):
     eq: DefaultList[UUID]
     neq: DefaultList[UUID]
+    is_empty: FlagField
+    is_not_empty: FlagField
+    in_: list[UUID] = Field(
+        default_factory=list,
+        alias="in",
+    )
+    not_in: DefaultList[UUID]
 
 
 class IntFilter(BaseFilter):
