@@ -69,7 +69,11 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
                 else ""
             )
             operators = extra.get(
-                "operators", [sub_field for sub_field in field.type_.__fields__]
+                "operators",
+                [
+                    sub_field.field_info.alias or field_name
+                    for field_name, sub_field in field.type_.__fields__.items()
+                ],
             )
             description += (
                 f"Allowed operators: `{'`, `'.join(operators)}`. "
