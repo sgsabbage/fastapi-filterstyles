@@ -87,8 +87,8 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
                 default=Query(
                     None,
                     description=description,
-                    regex=rf"^({':|'.join(operators)}:)?[^:]+$",
-                    example=extra.get("example", None),
+                    pattern=rf"^({':|'.join(operators)}:)?[^:]+$",
+                    examples=extra.get("examples", None),
                 ),
             )
         else:
