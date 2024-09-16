@@ -3,9 +3,10 @@ from typing import Annotated, Any, Callable, Type, TypeVar, Union, get_args
 
 from fastapi import FastAPI, HTTPException, Query, status
 from fastapi.routing import APIRoute
-from fastapi_filterstyles.fields import BaseFilter
 from pydantic import BaseModel, ValidationError
 from pydantic.fields import ModelField
+
+from fastapi_filterstyles.fields import BaseFilter
 
 FT = TypeVar("FT", bound="BaseModel")
 T = TypeVar("T")
@@ -34,7 +35,7 @@ def delimited_filter(filter_cls: Type[FT]) -> Callable[..., FT]:
             filter_fields = field.type_.__fields__
 
             for val in arg_val:
-                val_array = val.split(":")
+                val_array = val.split(":", 1)
                 op = val_array[0]
 
                 if op in filter_fields and filter_fields[op].field_info.extra.get(
